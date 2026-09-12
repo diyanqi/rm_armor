@@ -42,7 +42,29 @@ python3 traditional_cv/apps/main.py autoaim_all.mp4 --out out/annotated.mp4 --st
 
 各脚本均带命令行帮助（`-h`），完整用法见 [traditional_cv/README.md](traditional_cv/README.md)。
 
-## 后续计划
+## 深度学习方案
 
-深度学习方案将放在与 `traditional_cv/` 平级的新目录（如 `deep_learning/`）中，
-复用根目录下的数据集与测试视频，两套方案代码互不耦合。
+`deep_learning/` 为与 `traditional_cv/` 平级的深度学习方案（YOLO26-OBB 旋转框检测），
+自带 `utils/`，不引用传统视觉代码，两套方案互不耦合。合并 `dataset1` + `dataset2`
+（共 1790 张，24 类 = 颜色 × 车型）训练。
+
+```bash
+pip install -r deep_learning/requirements.txt
+
+# 1. 构建数据集：合并两个数据集 + 标签转换 + 近重复隔离划分 + 离线增广（噪点/遮挡/亮度）到约 4 倍
+python3 deep_learning/apps/build_dataset.py
+
+# 2. 训练 YOLO26-OBB（--device auto：NVIDIA 走 CUDA、Apple 走 MPS）
+python3 deep_learning/apps/train.py
+
+# 3. 推理与可视化
+python3 deep_learning/apps/infer.py --source dataset2/images --limit 50
+
+# 4. 交互式查看器：弹窗浏览标注结果 + 训练曲线
+python3 deep_learning/apps/viewer.py
+```
+
+本地训练太慢时，可用 [deep_learning/colab_train.ipynb](deep_learning/colab_train.ipynb)
+在 Google Colab 的 NVIDIA GPU 上训练，步骤见 [deep_learning/COLAB.md](deep_learning/COLAB.md)。
+
+详见 [deep_learning/README.md](deep_learning/README.md)。

@@ -14,8 +14,19 @@ preview/*
 
 # 数据集与测试媒体（仓库内只保留空目录占位）
 images/*
+dataset2/*
 !images/.gitkeep
+!dataset2/.gitkeep
+dataset1/*
+!dataset1/.gitkeep
 *.mp4
+
+# 深度学习：生成数据集、训练产物与权重（仓库内只保留占位目录）
+deep_learning/data/*
+!deep_learning/data/.gitkeep
+runs/
+weights/
+*.pt
 
 # 工具 / 系统
 .commandcode/

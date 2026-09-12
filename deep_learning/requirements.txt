@@ -1,0 +1,7 @@
+# 深度学习装甲板检测（YOLO26-OBB）
+# 安装：pip install -r deep_learning/requirements.txt
+# YOLO26 于 2026-01 随 ultralytics 发布，务必使用支持 yolo26*-obb.pt 的新版本。
+ultralytics>=8.4
+opencv-python>=4.8
+numpy>=1.24
+tqdm
