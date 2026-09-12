@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# 输出 / 生成物
+out/
+viewer_out/
+preview/*
+!preview/.gitkeep
+
+# 数据集与测试媒体（仓库内只保留空目录占位）
+images/*
+!images/.gitkeep
+*.mp4
+
+# 工具 / 系统
+.commandcode/
+.DS_Store
