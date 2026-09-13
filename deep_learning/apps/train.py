@@ -32,7 +32,7 @@ def resolve_device(name: str) -> str:
     return "cpu"
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="训练 YOLO26-OBB 装甲板检测模型")
     parser.add_argument("--data", default=DEFAULT_DATA_YAML, help="数据集 data.yaml")
     parser.add_argument("--model", default="yolo26n-obb.pt",
@@ -70,6 +70,12 @@ def main(argv: Optional[List[str]] = None) -> int:
           f"batch={args.batch} patience={args.patience}")
 
     model = YOLO(args.model)
+    if args.workers > 0:
+        # ultralytics 在 device 为 cpu/mps 时会把 workers 强制置 0（BaseTrainer.__init__），
+        # 这样图像解码/增广全挤在单进程里、成为瓶颈（实测吞吐与 batch 无关）。
+        # 该回调在 dataloader 构建之前触发，正好把 workers 改回来。
+        model.add_callback("on_pretrain_routine_start",
+                           lambda trainer: setattr(trainer.args, "workers", args.workers))
     model.train(
         data=args.data,
         epochs=args.epochs,

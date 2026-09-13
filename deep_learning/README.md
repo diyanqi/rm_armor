@@ -9,7 +9,8 @@ RoboMaster 装甲板检测的**深度学习方案**：YOLO26 旋转框（OBB）�
 deep_learning/
 ├── armor_det/            # 核心库
 │   ├── config.py         #   路径、类别、增广默认参数
-│   └── augment.py        #   离线增广：噪点 / 人为遮挡 / 亮度扰动
+│   ├── augment.py        #   离线增广：噪点 / 人为遮挡 / 亮度扰动
+│   └── pose.py           #   PnP 位姿解算（距离 / 朝向，真实尺寸常量）
 ├── apps/                 # 可执行入口（均在仓库根目录执行）
 │   ├── build_dataset.py  #   标签转换 + 近重复隔离划分 + 离线增广 → data/
 │   ├── train.py          #   YOLO26-OBB 训练（自动选 CUDA/MPS/CPU）
@@ -118,21 +119,32 @@ deep_learning/.venv/bin/python deep_learning/apps/infer.py --source autoaim_all.
 
 结果写入 `preview/obb_infer/`。
 
-### 4. 交互式查看器（弹窗看标注与训练结果）
+### 4. 交互式查看器（弹窗看标注、位姿与训练结果）
 
 ```bash
-# 默认：浏览验证集 + 最新权重，并弹出训练曲线窗口
+# 图片：浏览验证集 + 最新权重，并弹出训练曲线窗口
 deep_learning/.venv/bin/python deep_learning/apps/viewer.py
 
+# 视频：逐帧实时标注 + PnP 位姿（--source 直接给 mp4 即可）
+deep_learning/.venv/bin/python deep_learning/apps/viewer.py --source autoaim_all.mp4 --play
+
 # 指定权重/数据集，或只看原图与真值
-deep_learning/.venv/bin/python deep_learning/apps/viewer.py \
-    --weights deep_learning/runs/armor_obb_yolo26n/weights/best.pt --split train --limit 200
+deep_learning/.venv/bin/python deep_learning/apps/viewer.py --split train --limit 200
 deep_learning/.venv/bin/python deep_learning/apps/viewer.py --source dataset2/images --no-detect
 ```
 
-按键：`n/p` 上/下一张、`空格` 开关检测、`g` 真值(GT)、`c` 置信度、`v` 训练曲线窗口、
-`f` 适应窗口、`s` 保存、`h` 帮助、`q` 退出。曲线优先用 `results.png`，缺失时由 `results.csv` 现画。
+每个检出目标会用 **PnP 解算位姿**：按 `--hfov`（默认 60°）估算内参，或 `--calib` 加载标定文件；
+在框上叠加距离与坐标轴，左上角面板列出 `dist / yaw / pitch / x-y-z / 重投影误差`，
+并同时给出「按已知板高反推」的独立距离估计用于交叉验证。
+
+按键：`空格` 图片=开关检测 / 视频=播放暂停、`n/p` 上/下一张(帧)、`,/.` 前后跳、`r` 回到开头、
+`x` 开关检测、`z` 开关 PnP 位姿、`g` 真值(GT)、`c` 置信度、`v` 训练曲线窗口、`f` 适应窗口、
+`s` 保存、`h` 帮助、`q` 退出。曲线优先用 `results.png`，缺失时由 `results.csv` 现画。
 预测/真值框按颜色分组着色（蓝/红/灰），标签显示 24 类名（如 `red_infantry3`）。
+
+> PnP 相关参数：`--hfov` / `--calib` / `--size-from {class,aspect}` / `--no-pose`。
+> 装甲板尺寸取自类别（`hero`、`base_big` 按大板 0.231m，其余按小板 0.136m，板高 0.05603m），
+> 也可用 `--size-from aspect` 改由观测宽高比推断。
 
 ## 在 Colab（NVIDIA GPU）上训练
 

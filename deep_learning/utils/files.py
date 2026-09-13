@@ -11,7 +11,12 @@ import os
 import re
 from typing import List, Sequence
 
-from armor_det.config import IMAGE_SUFFIXES
+from armor_det.config import IMAGE_SUFFIXES, VIDEO_SUFFIXES
+
+
+def is_video(path: str) -> bool:
+    """按扩展名判断是否为视频文件。"""
+    return os.path.splitext(path)[1].lower() in VIDEO_SUFFIXES
 
 
 def natural_key(path: str) -> List:

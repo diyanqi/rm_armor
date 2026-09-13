@@ -64,6 +64,7 @@ DEFAULT_DATA_YAML = os.path.join(DEEP_LEARNING_DIR, "data", "armor_obb.yaml")
 DEFAULT_RUNS = os.path.join(DEEP_LEARNING_DIR, "runs")
 
 IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
+VIDEO_SUFFIXES = (".mp4", ".avi", ".mov", ".mkv", ".m4v")
 
 
 @dataclass
