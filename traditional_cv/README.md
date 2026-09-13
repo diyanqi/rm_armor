@@ -14,12 +14,13 @@ traditional_cv/
 │   ├── lightbar.py     # 灯带提取与外观筛选
 │   ├── armor.py        # 装甲板数据结构
 │   ├── matcher.py      # 灯带配对与板面校验
-│   ├── pose.py         # 相机模型 / PnP 位姿解算
+│   ├── camera.py       # 相机模型 / 内参估算与标定
+│   ├── pose.py         # PnP 位姿解算（距离 / 朝向）
 │   ├── detector.py     # 检测流水线（以上模块的编排）
 │   └── visualize.py    # 检测结果可视化
 ├── apps/               # 可执行入口
 │   ├── main.py             # 命令行：单图 / 图片目录 / 视频
-│   ├── viewer.py           # 交互式查看器（调参、逐帧浏览）
+│   ├── viewer.py           # 交互式查看器（调参、逐帧浏览，支持视频）
 │   ├── evaluate_dataset.py # 数据集召回 / 误报 / 耗时统计
 │   ├── make_preview.py     # 生成拼图与标注视频
 │   └── selfcheck.py        # 合成数据自检（无需图片）
@@ -63,3 +64,18 @@ python3 traditional_cv/apps/selfcheck.py
 ```
 
 各脚本自身带有完整的命令行帮助，例如 `python3 traditional_cv/apps/main.py -h`。
+
+## 查看器按键
+
+```text
+n / d / 右方向键   下一张            p / a / 左方向键   上一张
+space              切换“是否运行识别”（先看原图 / 看识别结果）
+r                  重新识别当前帧     b   切换灯带边框
+[ / ]              配对得分门限 -/+ 0.05（自动重识别）
+, / .              灯带亮度门限 -/+ 5（自动重识别）
+x                  切换位姿坐标轴     i   切换板面内部区域
+m                  切换颜色掩膜视图   k   切换灯带颜色指标
+f                  适应窗口 / 原始尺寸    + / -   缩放
+s                  保存当前标注图到 --save-dir
+h                  切换按键提示        q / ESC   退出
+```

@@ -7,24 +7,34 @@
 ```
 .
 ├── traditional_cv/     # 传统视觉方案：颜色分割 + 灯带配对 + PnP 位姿
-│   ├── rm_armor/       #   核心检测库
+│   ├── rm_armor/       #   核心检测库（相机模型 / 灯带配对 / PnP）
 │   ├── apps/           #   可执行入口（检测 / 查看器 / 评估 / 预览 / 自检）
 │   ├── utils/          #   通用工具
 │   ├── requirements.txt
 │   └── README.md
-├── images/             # 数据集占位目录（内容不入库）
+├── deep_learning/      # 深度学习方案：YOLO26-OBB 旋转框检测 + PnP 位姿
+│   ├── armor_det/      #   核心库（配置 / 离线增广 / PnP 位姿）
+│   ├── apps/           #   可执行入口（建数据集 / 训练 / 推理 / 查看器）
+│   ├── utils/          #   通用工具
+│   ├── requirements.txt
+│   └── README.md
+├── dataset1/ dataset2/ # 原始数据集占位目录（内容不入库）
+├── images/             # 抽帧图片占位目录（内容不入库）
 ├── preview/            # 预览输出占位目录（内容不入库）
+├── runs/               # 训练产物（不入库，训练后生成）
 └── autoaim_all.mp4     # 测试视频（不入库，需自行放置）
 ```
 
 ## 数据与媒体
 
-为控制仓库体积，数据集、测试视频与生成物均不纳入版本控制，仓库内只保留
-`images/`、`preview/` 两个空目录作为占位：
+为控制仓库体积，数据集、测试视频、生成物与模型权重均不纳入版本控制，仓库内只保留
+`images/`、`dataset1/`、`dataset2/`、`preview/`、`deep_learning/data/` 等空目录作为占位：
 
-- `images/`：放入从视频抽帧得到的图片（如 `frame_000001.jpg`）。
+- `images/`：传统视觉方案用的抽帧图片（如 `frame_000001.jpg`）。
+- `dataset1/`、`dataset2/`：深度学习方案的原始数据集（各含 `images/` 与 `labels/`）。
 - `autoaim_all.mp4`：测试视频，放在仓库根目录。
 - `preview/`、`out/`、`viewer_out/`：脚本生成的输出，会被自动忽略。
+- `runs/`、`deep_learning/data/`、`*.pt`：训练产物、生成数据集与权重，会被自动忽略。
 
 ## 快速开始
 
@@ -46,7 +56,8 @@ python3 traditional_cv/apps/main.py autoaim_all.mp4 --out out/annotated.mp4 --st
 
 `deep_learning/` 为与 `traditional_cv/` 平级的深度学习方案（YOLO26-OBB 旋转框检测），
 自带 `utils/`，不引用传统视觉代码，两套方案互不耦合。合并 `dataset1` + `dataset2`
-（共 1790 张，24 类 = 颜色 × 车型）训练。
+（共 1790 张，24 类 = 颜色 × 车型）训练，查看器同样支持 PnP 位姿解算（距离 / 朝向）
+与视频逐帧实时标注。
 
 ```bash
 pip install -r deep_learning/requirements.txt
@@ -60,8 +71,11 @@ python3 deep_learning/apps/train.py
 # 3. 推理与可视化
 python3 deep_learning/apps/infer.py --source dataset2/images --limit 50
 
-# 4. 交互式查看器：弹窗浏览标注结果 + 训练曲线
+# 4. 交互式查看器：弹窗浏览标注结果 + 训练曲线 + PnP 位姿
 python3 deep_learning/apps/viewer.py
+
+# 5. 视频逐帧实时标注（--play 打开即自动播放）
+python3 deep_learning/apps/viewer.py --source autoaim_all.mp4 --play
 ```
 
 本地训练太慢时，可用 [deep_learning/colab_train.ipynb](deep_learning/colab_train.ipynb)

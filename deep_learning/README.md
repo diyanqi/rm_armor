@@ -142,7 +142,10 @@ deep_learning/.venv/bin/python deep_learning/apps/viewer.py --source dataset2/im
 `s` 保存、`h` 帮助、`q` 退出。曲线优先用 `results.png`，缺失时由 `results.csv` 现画。
 预测/真值框按颜色分组着色（蓝/红/灰），标签显示 24 类名（如 `red_infantry3`）。
 
-> PnP 相关参数：`--hfov` / `--calib` / `--size-from {class,aspect}` / `--no-pose`。
+> PnP 相关参数：`--hfov`（水平视场角，默认 60°，未标定时据此估算内参）/
+> `--calib`（标定文件，优先于 `--hfov`）/ `--focal`（直接给焦距像素，优先于 `--hfov`，
+> 距离与之成正比）/ `--size-from {class,aspect}` / `--min-aspect`（宽高比可信度门限，
+> 默认 0.7，低于该值的框标为不可信）/ `--no-pose`。
 > 装甲板尺寸取自类别（`hero`、`base_big` 按大板 0.231m，其余按小板 0.136m，板高 0.05603m），
 > 也可用 `--size-from aspect` 改由观测宽高比推断。
 
